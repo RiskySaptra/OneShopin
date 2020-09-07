@@ -1,26 +1,56 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
+import { auth } from "./config";
+import { Home, Signup, Login, Test } from "./pages/Index.js";
+import { PublicRoute, PrivateRoute } from "./routing/Index.js";
+import { AppBars } from "./componets/Index";
 
-function App() {
+const NotFound = () => <h1>Kemana Bro 404</h1>;
+
+const App = () => {
+  const [authenticated, setAuthenticated] = useState({
+    auth: false,
+    laoding: true,
+  });
+
+  useEffect(() => {
+    auth().onAuthStateChanged((user, authenticated) => {
+      user
+        ? setAuthenticated({ ...authenticated, auth: true, loading: false })
+        : setAuthenticated({ ...authenticated, auth: false, loading: false });
+    });
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <AppBars authenticated={authenticated.auth} />
+      {authenticated.loading === true ? (
+        <h2>Loading...</h2>
+      ) : (
+        <Router>
+          <Switch>
+            <Route exact path="/" component={Home} />
+            <PrivateRoute
+              path="/test"
+              authenticated={authenticated.auth}
+              component={Test}
+            />
+            <PublicRoute
+              path="/signup"
+              authenticated={authenticated.auth}
+              component={Signup}
+            />
+            <PublicRoute
+              path="/login"
+              authenticated={authenticated.auth}
+              component={Login}
+            />
+            <Route component={NotFound} />
+          </Switch>
+        </Router>
+      )}
+    </>
   );
-}
+};
 
 export default App;
