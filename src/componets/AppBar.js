@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -9,10 +9,13 @@ import {
   Popover,
   IconButton,
   MenuItem,
+  Grid,
 } from "@material-ui/core";
 import { AccountCircle } from "@material-ui/icons";
 import { useStyles } from "./styles/appbar";
 import { signout } from "../helpers/auth";
+import { Context } from "../_store/StoreProvider";
+import { useHistory } from "react-router-dom";
 
 function HideOnScroll(props) {
   const { children } = props;
@@ -25,10 +28,16 @@ function HideOnScroll(props) {
 }
 
 const AppBars = (props) => {
+  let history = useHistory();
   const classes = useStyles();
-  const { authenticated } = props;
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [state] = useContext(Context);
+  const { authenticated, user, loading } = state;
+  const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+
+  const handleHome = () => {
+    history.push("/");
+  };
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -38,12 +47,9 @@ const AppBars = (props) => {
     setAnchorEl(null);
   };
 
-  const SignOuts = async (event) => {
-    try {
-      await signout();
-    } catch (error) {
-      console.log(error);
-    }
+  const SignOuts = (event) => {
+    setAnchorEl(null);
+    signout();
   };
 
   return (
@@ -52,73 +58,92 @@ const AppBars = (props) => {
       <HideOnScroll {...props}>
         <AppBar>
           <Toolbar>
-            <Typography variant="h6" className={classes.title}>
+            <Typography
+              variant="h6"
+              className={classes.title}
+              onClick={handleHome}
+            >
               OneShopin
             </Typography>
-            {authenticated && (
-              <div>
-                <IconButton
-                  aria-label="account of current user"
-                  aria-controls="menu-appbar"
-                  aria-haspopup="true"
-                  onClick={handleMenu}
-                  color="inherit"
-                >
-                  <AccountCircle />
-                </IconButton>
-                <Popover
-                  id="menu-appbar"
-                  anchorEl={anchorEl}
-                  anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "center",
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "center",
-                  }}
-                  open={open}
-                  onClose={handleClose}
-                >
+            {loading === true ? (
+              "Loading..."
+            ) : (
+              <>
+                {authenticated === true ? (
+                  <Grid
+                    container
+                    direction="row"
+                    justify="flex-end"
+                    alignItems="center"
+                  >
+                    <Typography variant="subtitle2" component="p">
+                      {user.displayName === null
+                        ? user.email
+                        : user.displayName}
+                    </Typography>
+                    <IconButton
+                      aria-label="account of current user"
+                      aria-controls="menu-appbar"
+                      aria-haspopup="true"
+                      onClick={handleMenu}
+                      color="inherit"
+                    >
+                      <AccountCircle />
+                    </IconButton>
+                  </Grid>
+                ) : (
+                  <Grid
+                    container
+                    direction="row"
+                    justify="flex-end"
+                    alignItems="center"
+                  >
+                    <Typography variant="subtitle2" component="p">
+                      Guest
+                    </Typography>
+                    <IconButton
+                      aria-label="account of current user"
+                      aria-controls="menu-appbar"
+                      aria-haspopup="true"
+                      onClick={handleMenu}
+                      color="inherit"
+                    >
+                      <AccountCircle />
+                    </IconButton>
+                  </Grid>
+                )}
+              </>
+            )}
+            <Popover
+              id="menu-appbar"
+              anchorEl={anchorEl}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "center",
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "center",
+              }}
+              open={open}
+              onClose={handleClose}
+            >
+              {authenticated === true ? (
+                <>
                   <MenuItem onClick={handleClose}>Profile</MenuItem>
                   <MenuItem onClick={SignOuts}>Logout</MenuItem>
-                </Popover>
-                {/* <Menu
-                  id="menu-appbar"
-                  anchorEl={anchorEl}
-                  anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "center",
-                  }}
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "center",
-                  }}
-                  open={open}
-                  onClose={handleClose}
-                >
-                  <MenuItem onClick={handleClose}>Profile</MenuItem>
-                  <MenuItem onClick={handleClose}>My account</MenuItem>
-                </Menu> */}
-              </div>
-            )}
+                </>
+              ) : (
+                <>
+                  <MenuItem onClick={handleClose}>What do you want ?</MenuItem>
+                </>
+              )}
+            </Popover>
           </Toolbar>
         </AppBar>
       </HideOnScroll>
       <Toolbar />
-      {/* <Container>
-        <Box my={2}>
-          {[...new Array(120)]
-            .map(
-              () => `Cras mattis consectetur purus sit amet fermentum.
-Cras justo odio, dapibus ac facilisis in, egestas eget quam.
-Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
-Praesent commodo cursus magna, vel scelerisque nisl consectetur et.`
-            )
-            .join("\n")}
-        </Box>
-      </Container> */}
     </>
   );
 };

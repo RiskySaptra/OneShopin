@@ -1,17 +1,18 @@
-import * as firebase from "firebase";
+import * as firebase from "firebase/app";
 import "firebase/auth";
+import "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBQEhPTClp4iabKT1rzGn54NDOZnD0_RUk",
-  authDomain: "oneshoppin.firebaseapp.com",
-  databaseURL: "https://oneshoppin.firebaseio.com",
-  projectId: "oneshoppin",
-  storageBucket: "oneshoppin.appspot.com",
-  messagingSenderId: "941089312971",
-  appId: "1:941089312971:web:2acd62be208a0eaf3d4b4e",
-  measurementId: "G-NDFMFTEKDD",
+  apiKey: "AIzaSyDcTu67gjMZ0dDJjIfa5Lz-_bXAlBXd4ys",
+  authDomain: "oneshopping.firebaseapp.com",
+  databaseURL: "https://oneshopping.firebaseio.com",
+  projectId: "oneshopping",
+  storageBucket: "oneshopping.appspot.com",
+  messagingSenderId: "700411401653",
+  appId: "1:700411401653:web:db177bdf478d615775f5fc",
+  measurementId: "G-2ZM507X1PR",
 };
-
 firebase.initializeApp(firebaseConfig);
+
 export const auth = firebase.auth;
-export const db = firebase.database();
+export const db = firebase.firestore();

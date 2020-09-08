@@ -1,54 +1,53 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
-import { auth } from "./config";
 import { Home, Signup, Login, Test } from "./pages/Index.js";
 import { PublicRoute, PrivateRoute } from "./routing/Index.js";
-import { AppBars } from "./componets/Index";
+import { AppBars, Loading } from "./componets/Index";
+import { Context } from "./_store/StoreProvider";
+import { auth } from "./config";
 
 const NotFound = () => <h1>Kemana Bro 404</h1>;
 
 const App = () => {
-  const [authenticated, setAuthenticated] = useState({
-    auth: false,
-    laoding: true,
-  });
+  const [state, dispatch] = useContext(Context);
+  const { authenticated, loading } = state;
 
   useEffect(() => {
-    auth().onAuthStateChanged((user, authenticated) => {
+    auth().onAuthStateChanged((user) => {
       user
-        ? setAuthenticated({ ...authenticated, auth: true, loading: false })
-        : setAuthenticated({ ...authenticated, auth: false, loading: false });
+        ? dispatch({ type: "SET_AUTH", payload: user })
+        : dispatch({ type: "SET_NO_AUTH", payload: null });
     });
-  }, []);
+  }, [dispatch]);
 
   return (
     <>
-      <AppBars authenticated={authenticated.auth} />
-      {authenticated.loading === true ? (
-        <h2>Loading...</h2>
-      ) : (
-        <Router>
+      <Router>
+        <AppBars />
+        {loading === true ? (
+          <Loading />
+        ) : (
           <Switch>
             <Route exact path="/" component={Home} />
             <PrivateRoute
               path="/test"
-              authenticated={authenticated.auth}
+              authenticated={authenticated}
               component={Test}
             />
             <PublicRoute
               path="/signup"
-              authenticated={authenticated.auth}
+              authenticated={authenticated}
               component={Signup}
             />
             <PublicRoute
               path="/login"
-              authenticated={authenticated.auth}
+              authenticated={authenticated}
               component={Login}
             />
             <Route component={NotFound} />
           </Switch>
-        </Router>
-      )}
+        )}
+      </Router>
     </>
   );
 };
