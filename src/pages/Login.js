@@ -1,23 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Link } from "react-router-dom";
-import {
-  TextField,
-  Grid,
-  Button,
-  IconButton,
-  Collapse,
-  Paper,
-} from "@material-ui/core";
-import Alert from "@material-ui/lab/Alert";
-import CloseIcon from "@material-ui/icons/Close";
-import { signin } from "../helpers/auth";
+import { TextField, Grid, Button, Paper } from "@material-ui/core";
+import { signin } from "../helpers/firebaseAPI";
+import { ColapseAlert } from "../componets/Index";
+import { Context } from "../_store/StoreProvider";
 
 const Login = () => {
-  const [error, setError] = useState({
-    msg: "",
-    alert: false,
-  });
-
+  const [, dispatch] = useContext(Context);
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -31,32 +20,17 @@ const Login = () => {
     event.preventDefault();
     try {
       await signin(form.email, form.password);
-    } catch (error) {
-      setError({ ...error, msg: error.message, alert: true });
+    } catch (err) {
+      dispatch({
+        type: "SET_ERROR",
+        payload: { errorStatus: true, errorMsg: err },
+      });
     }
   };
 
   return (
     <>
-      <Collapse in={error.alert}>
-        <Alert
-          severity="warning"
-          action={
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              size="small"
-              onClick={() => {
-                setError({ ...error, alert: false });
-              }}
-            >
-              <CloseIcon fontSize="inherit" />
-            </IconButton>
-          }
-        >
-          {error.msg}
-        </Alert>
-      </Collapse>
+      <ColapseAlert />
       <Grid
         container
         direction="column"

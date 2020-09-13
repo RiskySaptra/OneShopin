@@ -1,6 +1,6 @@
 import React, { useEffect, useContext } from "react";
-import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
-import { Home, Signup, Login, Test } from "./pages/Index.js";
+import { Route, Switch } from "react-router-dom";
+import { Home, Signup, Login, Profile, Test } from "./pages/Index.js";
 import { PublicRoute, PrivateRoute } from "./routing/Index.js";
 import { AppBars, Loading } from "./componets/Index";
 import { Context } from "./_store/StoreProvider";
@@ -22,32 +22,35 @@ const App = () => {
 
   return (
     <>
-      <Router>
-        <AppBars />
-        {loading === true ? (
-          <Loading />
-        ) : (
-          <Switch>
-            <Route exact path="/" component={Home} />
-            <PrivateRoute
-              path="/test"
-              authenticated={authenticated}
-              component={Test}
-            />
-            <PublicRoute
-              path="/signup"
-              authenticated={authenticated}
-              component={Signup}
-            />
-            <PublicRoute
-              path="/login"
-              authenticated={authenticated}
-              component={Login}
-            />
-            <Route component={NotFound} />
-          </Switch>
-        )}
-      </Router>
+      <AppBars />
+      {loading === true ? (
+        <Loading />
+      ) : (
+        <Switch>
+          <Route exact path="/" component={Home} />
+          <PrivateRoute
+            path="/profile"
+            authenticated={authenticated}
+            component={Profile}
+          />
+          <PrivateRoute
+            path="/test"
+            authenticated={authenticated}
+            component={Test}
+          />
+          <PublicRoute
+            path="/signup"
+            authenticated={authenticated}
+            component={Signup}
+          />
+          <PublicRoute
+            path="/login"
+            authenticated={authenticated}
+            component={Login}
+          />
+          <Route component={NotFound} />
+        </Switch>
+      )}
     </>
   );
 };

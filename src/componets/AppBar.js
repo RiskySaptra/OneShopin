@@ -13,7 +13,7 @@ import {
 } from "@material-ui/core";
 import { AccountCircle } from "@material-ui/icons";
 import { useStyles } from "./styles/appbar";
-import { signout } from "../helpers/auth";
+import { signout } from "../helpers/firebaseAPI";
 import { Context } from "../_store/StoreProvider";
 import { useHistory } from "react-router-dom";
 
@@ -28,9 +28,9 @@ function HideOnScroll(props) {
 }
 
 const AppBars = (props) => {
-  let history = useHistory();
-  const classes = useStyles();
   const [state] = useContext(Context);
+  const history = useHistory();
+  const classes = useStyles();
   const { authenticated, user, loading } = state;
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -45,6 +45,10 @@ const AppBars = (props) => {
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const gotoProfile = () => {
+    history.push("/profile");
   };
 
   const SignOuts = (event) => {
@@ -131,7 +135,7 @@ const AppBars = (props) => {
             >
               {authenticated === true ? (
                 <>
-                  <MenuItem onClick={handleClose}>Profile</MenuItem>
+                  <MenuItem onClick={gotoProfile}>Profile</MenuItem>
                   <MenuItem onClick={SignOuts}>Logout</MenuItem>
                 </>
               ) : (
