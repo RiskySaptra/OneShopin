@@ -1,45 +1,50 @@
 import React, { useContext, useState } from "react";
-import { Grid, Paper, Avatar, Button } from "@material-ui/core";
+import { Grid, Paper, Avatar, Button, Container } from "@material-ui/core";
 import { Context } from "../_store/StoreProvider";
-import { ColapseAlert } from "../componets/Index";
 
-import { uploadImage } from "../helpers/firebaseAPI";
+import { updatingProfile } from "../helpers/firebaseAPI";
 
 const EditProfile = () => {
-  const [, dispatch] = useContext(Context);
-  const [state] = useContext(Context);
+  const [state, dispatch] = useContext(Context);
   const { user } = state;
 
-  const [image, setImage] = useState({
-    name: null,
-    image: null,
-    file: null,
+  const [form, setForm] = useState({
+    displayName: null,
+    file: {
+      name: null,
+      image: null,
+      file: null,
+    },
   });
 
   const handleChange = (event) => {
     if (event.target.files[0]) {
       const blob = new Blob([event.target.files[0]], { type: "image/jpeg" });
       const image = URL.createObjectURL(event.target.files[0]);
-      setImage({
-        ...image,
-        name: event.target.files[0].name,
-        [event.target.name]: image,
-        file: blob,
+      setForm({
+        ...form,
+        file: {
+          name: event.target.files[0].name,
+          [event.target.name]: image,
+          file: blob,
+        },
       });
     } else {
-      setImage({
-        ...image,
-        name: null,
-        [event.target.name]: null,
-        file: null,
+      setForm({
+        ...form,
+        file: {
+          name: null,
+          [event.target.name]: null,
+          file: null,
+        },
       });
     }
   };
 
   const handleSubmit = async () => {
     try {
-      const link = await uploadImage(image);
-      console.log(link, "linknya");
+      const response = await updatingProfile(form);
+      console.log(response);
     } catch (err) {
       dispatch({
         type: "SET_ERROR",
@@ -49,57 +54,58 @@ const EditProfile = () => {
   };
 
   return (
-    <Grid>
-      <ColapseAlert />
-      <Paper style={{ padding: "15px" }}>
-        <Grid
-          container
-          direction="row"
-          justify="space-between"
-          alignItems="center"
-        >
-          <Grid>
-            <p>ID: {user.uid === null ? "kosong" : user.uid}</p>
-            <p>
-              Username:{" "}
-              {user.displayName === null ? "kosong" : user.displayName}
-            </p>
-            <p>Email : {user.email === null ? "kosong" : user.email}</p>
-            <p>
-              Terverifikasi : {user.emailVerified === false ? "Tidak" : "Ya"}
-            </p>
-            <p>
-              Nomor Handpone :{" "}
-              {user.phoneNumber === null ? "kosong" : user.phoneNumber}
-            </p>
-          </Grid>
-          <Grid>
-            <Grid
-              container
-              direction="column"
-              justify="center"
-              alignItems="center"
-            >
-              <Avatar
-                onClick={() => console.log("upload image")}
-                style={{ width: 180, height: 180 }}
-                alt={user.displayName}
-                src={state.photoURL || image.image}
-              />
-              <input
-                style={{ marginTop: "12px" }}
-                name="image"
-                type="file"
-                onChange={handleChange}
-              />
+    <>
+      <Container>
+        <Paper style={{ padding: "30px", marginTop: "50px" }} elevation={5}>
+          <h3>My Account</h3>
+          <Grid
+            container
+            direction="row"
+            justify="space-between"
+            alignItems="center"
+          >
+            <Grid>
+              <p>ID: {user.uid === null ? "kosong" : user.uid}</p>
+              <p>
+                Username:{" "}
+                {user.displayName === null ? "kosong" : user.displayName}
+              </p>
+              <p>Email : {user.email === null ? "kosong" : user.email}</p>
+              <p>
+                Terverifikasi : {user.emailVerified === false ? "Tidak" : "Ya"}
+              </p>
+              <p>
+                Nomor Handpone :{" "}
+                {user.phoneNumber === null ? "kosong" : user.phoneNumber}
+              </p>
+            </Grid>
+            <Grid>
+              <Grid
+                container
+                direction="column"
+                justify="center"
+                alignItems="center"
+              >
+                <Avatar
+                  style={{ width: 150, height: 150, marginBottom: "15px" }}
+                  alt={user.displayName}
+                  src={form.file.image || user.photoURL}
+                />
+                <input
+                  style={{ marginTop: "15px" }}
+                  name="image"
+                  type="file"
+                  onChange={handleChange}
+                />
+              </Grid>
             </Grid>
           </Grid>
-        </Grid>
-        <Button onClick={handleSubmit} variant="contained" color="primary">
-          submit
-        </Button>
-      </Paper>
-    </Grid>
+          <Button onClick={handleSubmit} variant="contained" color="primary">
+            submit
+          </Button>
+        </Paper>
+      </Container>
+    </>
   );
 };
 

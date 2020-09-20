@@ -50,7 +50,7 @@ const Profile = () => {
                 <Avatar
                   style={{ width: 180, height: 180 }}
                   alt={user.displayName}
-                  src={state.photoURL || ""}
+                  src={user.photoURL || ""}
                 />
               </Grid>
             </Grid>

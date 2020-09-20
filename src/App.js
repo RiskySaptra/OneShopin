@@ -1,6 +1,7 @@
 import React, { useEffect, useContext } from "react";
 import { Route, Switch } from "react-router-dom";
 import { Home, Signup, Login, Profile, Test } from "./pages/Index.js";
+import { ColapseAlert } from "./componets/Index";
 import { PublicRoute, PrivateRoute } from "./routing/Index.js";
 import { AppBars, Loading } from "./componets/Index";
 import { Context } from "./_store/StoreProvider";
@@ -23,6 +24,7 @@ const App = () => {
   return (
     <>
       <AppBars />
+      <ColapseAlert />
       {loading === true ? (
         <Loading />
       ) : (

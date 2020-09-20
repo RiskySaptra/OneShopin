@@ -2,7 +2,6 @@ import React, { useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import { TextField, Grid, Button, Paper } from "@material-ui/core";
 import { signin } from "../helpers/firebaseAPI";
-import { ColapseAlert } from "../componets/Index";
 import { Context } from "../_store/StoreProvider";
 
 const Login = () => {
@@ -19,7 +18,7 @@ const Login = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      await signin(form.email, form.password);
+      await signin(form);
     } catch (err) {
       dispatch({
         type: "SET_ERROR",
@@ -30,7 +29,6 @@ const Login = () => {
 
   return (
     <>
-      <ColapseAlert />
       <Grid
         container
         direction="column"

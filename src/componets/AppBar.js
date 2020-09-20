@@ -1,155 +1,129 @@
-import React, { useContext, useState } from "react";
+import React, { useState, useContext } from "react";
+import SearchIcon from "@material-ui/icons/Search";
 import {
-  AppBar,
-  Toolbar,
+  Container,
+  InputBase,
   Typography,
-  CssBaseline,
-  useScrollTrigger,
-  Slide,
-  Popover,
+  Toolbar,
+  AppBar,
   IconButton,
+  Popover,
   MenuItem,
-  Grid,
 } from "@material-ui/core";
-import { AccountCircle } from "@material-ui/icons";
-import { useStyles } from "./styles/appbar";
+import { styles } from "./styles/appbar";
+
+import { AccountCircle, ShoppingCart } from "@material-ui/icons";
 import { signout } from "../helpers/firebaseAPI";
 import { Context } from "../_store/StoreProvider";
 import { useHistory } from "react-router-dom";
 
-function HideOnScroll(props) {
-  const { children } = props;
-  const trigger = useScrollTrigger();
-  return (
-    <Slide appear={false} direction="down" in={!trigger}>
-      {children}
-    </Slide>
-  );
-}
-
-const AppBars = (props) => {
+export default function SearchAppBar() {
   const [state] = useContext(Context);
+  const classes = styles();
   const history = useHistory();
-  const classes = useStyles();
-  const { authenticated, user, loading } = state;
+
+  const { authenticated, loading } = state;
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
-  const handleHome = () => {
-    history.push("/");
-  };
+  const gotoHome = () => history.push("/");
+  const gotoProfile = () => history.push("/profile");
 
-  const handleMenu = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const gotoProfile = () => {
-    history.push("/profile");
-  };
-
-  const SignOuts = (event) => {
+  const SignOuts = () => {
     setAnchorEl(null);
     signout();
   };
 
+  const gotoTest = () => history.push("/test");
   return (
-    <>
-      <CssBaseline />
-      <HideOnScroll {...props}>
-        <AppBar>
-          <Toolbar>
-            <Typography
-              variant="h6"
-              className={classes.title}
-              onClick={handleHome}
-            >
-              OneShopin
-            </Typography>
-            {loading === true ? (
-              "Loading..."
-            ) : (
-              <>
-                {authenticated === true ? (
-                  <Grid
-                    container
-                    direction="row"
-                    justify="flex-end"
-                    alignItems="center"
-                  >
-                    <Typography variant="subtitle2" component="p">
-                      {user.displayName === null
-                        ? user.email
-                        : user.displayName}
-                    </Typography>
-                    <IconButton
-                      aria-label="account of current user"
-                      aria-controls="menu-appbar"
-                      aria-haspopup="true"
-                      onClick={handleMenu}
-                      color="inherit"
-                    >
-                      <AccountCircle />
-                    </IconButton>
-                  </Grid>
-                ) : (
-                  <Grid
-                    container
-                    direction="row"
-                    justify="flex-end"
-                    alignItems="center"
-                  >
-                    <Typography variant="subtitle2" component="p">
-                      Guest
-                    </Typography>
-                    <IconButton
-                      aria-label="account of current user"
-                      aria-controls="menu-appbar"
-                      aria-haspopup="true"
-                      onClick={handleMenu}
-                      color="inherit"
-                    >
-                      <AccountCircle />
-                    </IconButton>
-                  </Grid>
-                )}
-              </>
-            )}
-            <Popover
-              id="menu-appbar"
-              anchorEl={anchorEl}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "center",
+    <AppBar position="static">
+      <Container>
+        <Toolbar disableGutters>
+          <Typography
+            onClick={gotoHome}
+            className={classes.title}
+            variant="h6"
+            noWrap
+          >
+            OneShopin
+          </Typography>
+          <div className={classes.search}>
+            <div className={classes.searchIcon}>
+              <SearchIcon />
+            </div>
+            <InputBase
+              placeholder="Search…"
+              classes={{
+                root: classes.inputRoot,
+                input: classes.inputInput,
               }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "center",
-              }}
-              open={open}
-              onClose={handleClose}
-            >
+              inputProps={{ "aria-label": "search" }}
+            />
+          </div>
+          {loading === true ? (
+            "Loading..."
+          ) : (
+            <>
               {authenticated === true ? (
                 <>
-                  <MenuItem onClick={gotoProfile}>Profile</MenuItem>
-                  <MenuItem onClick={SignOuts}>Logout</MenuItem>
+                  {/* <Typography variant="subtitle2" component="p">
+                    {user.displayName === null ? user.email : user.displayName}
+                  </Typography> */}
+                  <IconButton onClick={gotoTest} color="inherit">
+                    <ShoppingCart />
+                  </IconButton>
+                  <IconButton
+                    onClick={(event) => setAnchorEl(event.currentTarget)}
+                    color="inherit"
+                  >
+                    <AccountCircle />
+                  </IconButton>
                 </>
               ) : (
                 <>
-                  <MenuItem onClick={handleClose}>What do you want ?</MenuItem>
+                  <IconButton onClick={gotoTest} color="inherit">
+                    <ShoppingCart />
+                  </IconButton>
+                  <IconButton
+                    onClick={(event) => setAnchorEl(event.currentTarget)}
+                    color="inherit"
+                  >
+                    <AccountCircle />
+                  </IconButton>
                 </>
               )}
-            </Popover>
-          </Toolbar>
-        </AppBar>
-      </HideOnScroll>
-      <Toolbar />
-    </>
+            </>
+          )}
+        </Toolbar>
+        <Popover
+          id="menu-appbar"
+          anchorEl={anchorEl}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "center",
+          }}
+          keepMounted
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "center",
+          }}
+          open={open}
+          onClose={() => setAnchorEl(null)}
+        >
+          {authenticated === true ? (
+            <>
+              <MenuItem onClick={gotoProfile}>Profile</MenuItem>
+              <MenuItem onClick={SignOuts}>Logout</MenuItem>
+            </>
+          ) : (
+            <>
+              <MenuItem onClick={() => setAnchorEl(null)}>
+                What do you want ?
+              </MenuItem>
+            </>
+          )}
+        </Popover>
+      </Container>
+    </AppBar>
   );
-};
-
-export default AppBars;
+}

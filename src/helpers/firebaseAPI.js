@@ -1,9 +1,9 @@
 import { auth, storage } from "../config";
 
-export const signup = async (email, password) => {
+export const signup = async (data) => {
   try {
     const response = await auth()
-      .createUserWithEmailAndPassword(email, password)
+      .createUserWithEmailAndPassword(data.email, data.password)
       .catch((error) => {
         return error;
       });
@@ -17,10 +17,10 @@ export const signup = async (email, password) => {
   }
 };
 
-export const signin = async (email, password) => {
+export const signin = async (data) => {
   try {
     const response = await auth()
-      .signInWithEmailAndPassword(email, password)
+      .signInWithEmailAndPassword(data.email, data.password)
       .catch((error) => {
         return error;
       });
@@ -29,32 +29,27 @@ export const signin = async (email, password) => {
     } else {
       return response;
     }
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updatingProfile = async (data) => {
+  try {
+    const user = await auth().currentUser;
+    const uploadTask = await storage
+      .ref(`/profileImages/${user.uid}/${data.file.name}`)
+      .put(data.file.file);
+    const imageSrc = await uploadTask.ref.getDownloadURL();
+    const response = await user.updateProfile({
+      displayName: "afdool",
+      photoURL: imageSrc,
+    });
+    console.log(response, "api level");
+    return "sucsess";
   } catch (error) {
     throw error;
   }
 };
 
 export const signout = () => auth().signOut();
-
-export const uploadImage = async (data) => {
-  try {
-    const user = await auth().currentUser;
-    const uploadTask = await storage
-      .ref(`/profileImages/${user.uid}/${data.name}`)
-      .put(data.file);
-    const imageSrc = await uploadTask.ref.getDownloadURL();
-    return imageSrc;
-  } catch (error) {
-    throw error;
-  }
-};
-// var user = firebase.auth().currentUser;
-
-// user.updateProfile({
-//   displayName: "Jane Q. User",
-//   photoURL: "https://example.com/jane-q-user/profile.jpg"
-// }).then(function() {
-//   // Update successful.
-// }).catch(function(error) {
-//   // An error happened.
-// });
