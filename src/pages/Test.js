@@ -5,7 +5,6 @@ import { data } from "./dummy";
 import { makeStyles } from "@material-ui/core/styles";
 import Chip from "@material-ui/core/Chip";
 import Paper from "@material-ui/core/Paper";
-import TagFacesIcon from "@material-ui/icons/TagFaces";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -13,6 +12,8 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Checkbox from "@material-ui/core/Checkbox";
+import TextField from "@material-ui/core/TextField";
+import { Button, Grid } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -31,7 +32,9 @@ const useStyles = makeStyles((theme) => ({
 function TodoForm({ addTodo }) {
   const [value, setValue] = React.useState("");
 
-  const handleSubmit = e => {
+  console.log(value);
+
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (!value) return;
     addTodo(value);
@@ -39,67 +42,104 @@ function TodoForm({ addTodo }) {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        className="input"
+    <Grid
+      container
+      direction="column"
+      justify="flex-start"
+      alignItems="flex-start"
+      style={{ marginLeft: "5%", marginBottom: "5%" }}
+    >
+      <h2>filters</h2>
+
+      <TextField
+        label="Universitas"
+        name="universitas"
         value={value.value}
-        onChange={e => setValue({label: e.target.value, value: e.target.value})}
+        onChange={(e) =>
+          setValue({ label: e.target.name, value: e.target.value })
+        }
+        variant="outlined"
+        margin="dense"
       />
-    </form>
+      <TextField
+        label="Jurusan"
+        name="jurusan"
+        value={value.value}
+        onChange={(e) =>
+          setValue({ label: e.target.name, value: e.target.value })
+        }
+        variant="outlined"
+        margin="dense"
+      />
+      <TextField label="Outlined" variant="outlined" margin="dense" />
+      <TextField label="Outlined" variant="outlined" margin="dense" />
+      <Button onClick={handleSubmit}>setFilterTable</Button>
+    </Grid>
+    // <form onSubmit={handleSubmit}>
+    //   <input
+    //       placeholder="universitas"
+    //       type="text"
+    //       name="universitas"
+    //       className="input"
+    //       value={value.value}
+    //       onChange={(e) =>
+    //         setValue({ label: e.target.name, value: e.target.value })
+    //       }
+    //     />
+    // </form>
   );
 }
 
 const Test = () => {
   const classes = useStyles();
 
-  const [filter, setFilter] = React.useState([
-    // {label: '25 tahun', value: 25}
+  const [filterTable, setFilterTable] = React.useState([
+    { label: "universitas", value: "memek" },
+    { label: "nama", value: "asrool" },
   ]);
 
-  const addTodo = text => {
-    console.log(text);
-    const newFilter = [...filter,  text ];
-    setFilter(newFilter);
+  const addTodo = (text) => {
+    const newFilter = [...filterTable, text];
+    setFilterTable(newFilter);
   };
 
-
-  const [datass, setDatass] = React.useState([])
+  const [datass, setDatass] = React.useState([]);
 
   const handleDelete = (chipToDelete) => () => {
-    setFilter(() =>
-    filter.filter((chip) => chip.key !== chipToDelete.key)
+    setFilterTable(() =>
+      filterTable.filter((chip) => chip.value !== chipToDelete.value)
     );
   };
 
-
   const filters = () => {
-    if (filter.length > 0){
-      setDatass(data.filter(item => filter.some(itm => itm.value === item.nama)))
+    if (filterTable.length > 0) {
+      setDatass(
+        data.filter((item) =>
+          filterTable.every((itm) => {
+            return itm.value === item[itm.label];
+          })
+        )
+      );
     } else {
-      setDatass(data)
+      setDatass(data);
     }
-  }
-  
+  };
+
   React.useEffect(() => {
-    filters()
-  }, [filter]);
-
-
+    filters();
+  }, [filterTable]);
 
   return (
     <>
       <Paper component="ul" className={classes.root}>
-        {filter.map((data) => {
+        {filterTable.map((data) => {
           let icon;
           return (
-            <li >
+            <li>
               <Chip
                 icon={icon}
-                label={data.label}
-                onDelete={
-                 handleDelete(data)
-                }
+                label={`${data.label} ${data.value}`}
+                onDelete={handleDelete(data)}
                 className={classes.chip}
               />
             </li>
@@ -111,13 +151,13 @@ const Test = () => {
         <Table className={classes.table} aria-label="simple table">
           <TableHead>
             <TableRow>
-            <TableCell component="th" scope="row" padding='checkbox'>
+              <TableCell component="th" scope="row" padding="checkbox">
                 <Checkbox
                   checked={false}
                   // onChange={handleChange}
                   inputProps={{ "aria-label": "primary checkbox" }}
                 />
-                </TableCell>
+              </TableCell>
               <TableCell>Name</TableCell>
               <TableCell>NIk</TableCell>
               <TableCell>Umur</TableCell>
@@ -130,14 +170,13 @@ const Test = () => {
           <TableBody>
             {datass.map((row) => (
               <TableRow key={row.id}>
-                <TableCell component="th" scope="row" padding='checkbox'>
-                <Checkbox
-                  checked={false}
-                  // onChange={handleChange}
-                  inputProps={{ "aria-label": "primary checkbox" }}
-                />
+                <TableCell component="th" scope="row" padding="checkbox">
+                  <Checkbox
+                    checked={false}
+                    inputProps={{ "aria-label": "primary checkbox" }}
+                  />
                 </TableCell>
-               
+
                 <TableCell component="th" scope="row">
                   {row.nama}
                 </TableCell>
