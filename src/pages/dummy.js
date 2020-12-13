@@ -79,7 +79,7 @@ export const data = [
   },
   {
     id: "7",
-    nama: "Latif Januars",
+    nama: "asrool",
     nik: 1241534651255112,
     age: 25,
     birthplace: "jakarta",
