@@ -75,7 +75,7 @@ const Test = () => {
 
   const filters = () => {
     if (filter.length > 0){
-      setDatass(data.filter(item => filter.some(itm => itm.value === item.age)))
+      setDatass(data.filter(item => filter.some(itm => itm.value === item.nama)))
     } else {
       setDatass(data)
     }
