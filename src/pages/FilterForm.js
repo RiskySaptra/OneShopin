@@ -4,8 +4,10 @@ import { Button, Grid, TextField } from "@material-ui/core";
 
 // add new object for new filter label (NOTE: (label = object key) and (value = object value) )
 const fields = [
-  { label: "Universitas", name: "universitas" },
-  { label: "Jurusan", name: "jurusan" },
+  { label: "Universitas", name: "universitas", type: "text" },
+  { label: "Jurusan", name: "jurusan", type: "autoselect" },
+  { label: "Ipk", name: "ipk", type: "text" },
+  { label: "Umur", name: "age", type: "number" },
 ];
 
 const FilterForm = ({ addFilters }) => {
@@ -13,7 +15,10 @@ const FilterForm = ({ addFilters }) => {
 
   const handleChange = (index, e) => {
     let newArr = [...value];
-    newArr[index] = { label: e.target.name, value: e.target.value };
+    newArr[index] = {
+      label: e.target.name,
+      value: e.target.name === "age" ? Number(e.target.value) : e.target.value,
+    };
     setValue(newArr);
   };
 
@@ -28,9 +33,9 @@ const FilterForm = ({ addFilters }) => {
     <Grid
       container
       direction="column"
-      justify="flex-start"
-      alignItems="flex-start"
-      style={{ marginLeft: "5%", marginBottom: "5%" }}
+      justify="center"
+      alignItems="center"
+      //   style={{ marginLeft: "5%", marginBottom: "5%" }}
     >
       <h2>Filters</h2>
       {fields.map((field, index) => (
@@ -42,6 +47,7 @@ const FilterForm = ({ addFilters }) => {
             // label={field.label} this shit buging
             name={field.name}
             key={index}
+            type={field.type}
             value={value.length > 0 ? value.value : ""}
             onChange={(e) => handleChange(index, e)}
             variant="outlined"
